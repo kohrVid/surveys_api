@@ -1,0 +1,22 @@
+install:
+	pip install -r requirements.txt
+	make db-create -i
+	make db-migrate -i
+
+db-create:
+	python manage.py db_create
+
+db-migrate:
+	python manage.py makemigrations
+	python manage.py migrate
+
+db-clean:
+	python manage.py db_clean
+
+db-drop:
+	python manage.py db_drop
+
+serve:
+	python manage.py runserver
+
+.PHONY: install db-create db-migrate db-clean db-drop serve
