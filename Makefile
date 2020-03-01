@@ -24,6 +24,6 @@ test:
 	coverage report
 
 test-hot-reload:
-	./watch_test.sh
+	./bin/watch_test.sh
 
 .PHONY: install db-create db-migrate db-clean db-drop serve test test-hot-reload

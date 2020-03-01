@@ -1,5 +1,4 @@
 .installed.cfg
-bin
 .coverage
 develop-eggs
 dist
