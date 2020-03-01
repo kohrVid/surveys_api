@@ -7,6 +7,7 @@ surveys.
 
 * [Prerequisites](#prerequisites)
 * [Run the app](#run-the-app)
+* [API Documentation](#api-documentation)
 
 <!-- vim-markdown-toc -->
 
@@ -49,3 +50,19 @@ To drop the database:
 To run the webserver:
 
     make serve
+
+To run the test suite:
+
+    make test
+
+To run tests with inotify:
+
+    make test-hot-reload
+
+
+## API Documentation
+
+This application comes with swagger documentation for the API. When the server
+is run on `localhost:8000`, the Swagger UI can be viewed
+[here](http://localhost:8000/swagger-ui) and the JSON version of the API
+documentation can be found [here](http://localhost:8000/swagger.json).

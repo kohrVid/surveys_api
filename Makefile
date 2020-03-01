@@ -19,4 +19,11 @@ db-drop:
 serve:
 	python manage.py runserver
 
-.PHONY: install db-create db-migrate db-clean db-drop serve
+test:
+	coverage run --source='.' manage.py test
+	coverage report
+
+test-hot-reload:
+	./watch_test.sh
+
+.PHONY: install db-create db-migrate db-clean db-drop serve test test-hot-reload
