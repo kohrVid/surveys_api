@@ -11,8 +11,10 @@ setup(
         install_requires=[
             'coverage',
             'Django',
+            'django_factory',
             'djangorestframework',
             'drf-yasg',
+            'Faker',
             'psycopg2',
             'python-decouple',
             ],
