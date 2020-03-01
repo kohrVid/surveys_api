@@ -20,3 +20,17 @@ class RootViewsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.get('Content-Type', ''), 'text/plain')
         self.assertEqual(response.content, b'OK')
+
+    def test_get_swagger(self):
+        response = self.client.get('/swagger-ui')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('text/html', response.get('Content-Type', ''))
+        self.assertIn(b'swagger', response.content)
+
+    def test_get_swagger_json(self):
+        response = self.client.get('/swagger.json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('application/json', response.get('Content-Type', ''))
+        self.assertIn(b'"/"', response.content)
+        self.assertIn(b'"200"', response.content)
+        self.assertIn(b'"400"', response.content)

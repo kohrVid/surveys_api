@@ -1,16 +1,18 @@
 from setuptools import setup, find_packages
+from decouple import config
 
 setup(
-        name= 'surveys_api',
-        version='1.0',
-        description='An API for studies',
-        author='Jessica Été',
-        author_email='kohrVid@zoho.com',
+        name= config('APP_NAME'),
+        version=config('VERSION'),
+        description=config('DESCRIPTION'),
+        author=config('AUTHOR'),
+        author_email=config('AUTHOR_EMAIL'),
         packages=['surveys', 'surveys_api'],
         install_requires=[
             'coverage',
             'Django',
             'djangorestframework',
+            'drf-yasg',
             'psycopg2',
             'python-decouple',
             ],
