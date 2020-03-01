@@ -7,6 +7,7 @@
 asgiref==3.2.3            # via django
 coverage==5.0.3           # via surveys_api (setup.py)
 django==3.0.3             # via djangorestframework, surveys_api (setup.py)
+djangorestframework==3.11.0  # via surveys_api (setup.py)
 psycopg2==2.8.4           # via surveys_api (setup.py)
 python-decouple==3.3      # via surveys_api (setup.py)
 pytz==2019.3              # via django

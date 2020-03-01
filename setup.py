@@ -10,6 +10,7 @@ setup(
         install_requires=[
             'coverage',
             'Django',
+            'djangorestframework',
             'psycopg2',
             'python-decouple',
             ],
