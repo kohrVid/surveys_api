@@ -1,12 +1,13 @@
 import psycopg2
+from decouple import config
 from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
     help = 'Drops the Surveys API database'
 
     def handle(self, *args, **options):
-        drop_database = "DROP DATABASE {};".format("surveys_api")
-        drop_role = "DROP ROLE {}".format("surveys_api")
+        drop_database = "DROP DATABASE {};".format(config("DATABASE_NAME"))
+        drop_role = "DROP ROLE {}".format(config("DATABASE_USER"))
 
         conn = psycopg2.connect("dbname=postgres user=postgres")
         conn.set_session(autocommit=True)
@@ -19,7 +20,9 @@ class Command(BaseCommand):
 
         self.stdout.write(
                 self.style.SUCCESS(
-                    "Successfully dropped the {} database".format("surveys_api")
+                    "Successfully dropped the {} database".format(
+                        config("DATABASE_NAME"),
                     )
-            )
+                )
+        )
 

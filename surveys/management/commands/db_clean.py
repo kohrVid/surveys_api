@@ -1,4 +1,5 @@
 import psycopg2
+from decouple import config
 from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
@@ -29,7 +30,7 @@ class Command(BaseCommand):
 
         clean_db = "{} SELECT truncate_tables('{}');".format(
                 truncate_tables,
-                "surveys_api"
+                config("DATABASE_NAME"),
         )
 
         conn = psycopg2.connect("dbname=postgres user=postgres")
@@ -42,7 +43,9 @@ class Command(BaseCommand):
 
         self.stdout.write(
                 self.style.SUCCESS(
-                    "Successfully deleted all rows in the {} database".format("surveys_api")
+                    "Successfully deleted all rows in the {} database".format(
+                        config("DATABASE_NAME"),
                     )
-            )
+                )
+        )
 
