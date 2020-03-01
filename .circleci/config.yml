@@ -1,56 +1,43 @@
 version: 2
-
 jobs:
   build:
+    working_directory: ~/circleci-demo-python-django
     docker:
-      - image: circleci/python:3.8
+      - image: circleci/python:3.7.0
         environment:
           PIPENV_VENV_IN_PROJECT: true
-      - image: circleci/postgres:10-alpine
+          DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
+      - image: circleci/postgres:12.1-alpine
         environment:
-          POSTGRES_USER: circleci
-          POSTGRES_DB: surveys_api_test
-          TEST_RESULTS: /tmp/test-results
-          ENV: test
-          DATABASE_USER: surveys_api
-          DATABASE_NAME: surveys_api_test
-          DATABASE_PASSWORD: surveys_api
-          DATABASE_HOST: localhost
-          DATABASE_PORT: 5432
-
-    working_directory: ~/circleci-demo-python-django
-
+          POSTGRES_USER: root
+          POSTGRES_DB: circle_test
     steps:
       - checkout
-
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:
+          key: deps10-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
       - run:
-          name: Waiting for Postgres to be ready
           command: |
-            for i in `seq 1 10`;
-            do
-              nc -z localhost 5432 && echo Success && exit 0
-              echo -n .
-              sleep 1
-            done
-            echo Failed waiting for Postgres && exit 1
-
-
+            sudo pip install pipenv
+            pipenv install
+      - save_cache:
+          key: deps10-{{ .Branch }}-{{ checksum "Pipfile.lock" }}
+          paths:
+            - '.venv'
+            - '/usr/local/bin'
+            - '/usr/local/lib/python3.7/site-packages'
       - run:
-          command: mkdir -p /tmp/test-results
-
-      - run:
-          name: Pip Install
           command: |
-            pip install -r requirements.txt
-      #- run:
-          #name: Database Setup
-          #command: |
-            #make install
+            pipenv run python manage.py db_create
       - run:
-          name: Test
           command: |
-            make test
-
-      # Save artifacts
+            make db-migrate
+      - run:
+          command: |
+            pipenv run python manage.py test
       - store_test_results:
-          path: /tmp/test-results
+          path: test-results
+      - store_artifacts:
+          path: test-results
+          destination: tr1
