@@ -22,9 +22,11 @@ from django.views.generic import TemplateView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import routers, permissions
-from surveys.views import root_views
+from surveys.views import root_views, user_views
 
 router = routers.DefaultRouter()
+router.register(r'users', user_views.UserViewSet)
+router.register(r'groups', user_views.GroupViewSet)
 
 slashless_router = routers.DefaultRouter(trailing_slash=False)
 slashless_router.registry = router.registry[:]
@@ -60,6 +62,7 @@ urlpatterns = [
     ),
 
     path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
     path('', root_views.get_root),
     path('', include(router.urls)),
