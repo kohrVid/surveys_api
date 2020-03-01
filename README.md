@@ -49,3 +49,11 @@ To drop the database:
 To run the webserver:
 
     make serve
+
+To run the test suite:
+
+    make test
+
+To run tests with inotify:
+
+    make test-hot-reload

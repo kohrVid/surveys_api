@@ -8,6 +8,7 @@ setup(
         author_email='kohrVid@zoho.com',
         packages=['surveys', 'surveys_api'],
         install_requires=[
+            'coverage',
             'Django',
             'psycopg2',
             'python-decouple',
