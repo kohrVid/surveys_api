@@ -7,6 +7,10 @@ jobs:
         environment:
           PIPENV_VENV_IN_PROJECT: true
           DATABASE_URL: postgresql://root@localhost/circle_test?sslmode=disable
+          DATABASE_HOST: localhost
+          DATABASE_NAME: circle_test
+          POSTGRES_USER: root
+          POSTGRES_DB: circle_test
       - image: circleci/postgres:12.1-alpine
         environment:
           POSTGRES_USER: root
