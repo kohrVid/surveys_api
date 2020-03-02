@@ -1,8 +1,8 @@
 from surveys.models.survey import Survey
-from django_factory import factory
+from factory.django import DjangoModelFactory
 from faker import Faker
 
-class SurveyFactory(factory.Factory):
+class SurveyFactory(DjangoModelFactory):
     pk = 1
     name = Faker().name()
     available_places = 4

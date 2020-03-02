@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User, Group
-from django_factory import factory
+from factory.django import DjangoModelFactory
 from faker import Faker
 
-class UserFactory(factory.Factory):
+class UserFactory(DjangoModelFactory):
     pk = 1
     username = Faker().name()
     password = 'Password1234!'
@@ -13,7 +13,7 @@ class UserFactory(factory.Factory):
     class Meta: 
         model = User
 
-class GroupFactory(factory.Factory):
+class GroupFactory(DjangoModelFactory):
     pk = 1
     name = Faker().name()
     url = "http://testserver/groups/{}".format(pk)
