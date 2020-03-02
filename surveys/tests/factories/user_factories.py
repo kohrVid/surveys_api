@@ -6,17 +6,15 @@ class UserFactory(DjangoModelFactory):
     pk = 1
     username = Faker().name()
     password = 'Password1234!'
-    url = "http://testserver/users/{}".format(pk)
     email = Faker().email()
-    groups = []
 
-    class Meta: 
+    class Meta:
         model = User
+
 
 class GroupFactory(DjangoModelFactory):
     pk = 1
     name = Faker().name()
-    url = "http://testserver/groups/{}".format(pk)
 
-    class Meta: 
+    class Meta:
         model = Group

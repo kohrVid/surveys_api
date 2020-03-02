@@ -15,7 +15,7 @@ class UserSerialiserTest(TestCase):
                 'request': Request(request),
         }   
         
-        for field_name in ['username', 'url', 'email']:
+        for field_name in ['username', 'email']:
             self.assertEqual(
                 UserSerialiser(
                     instance=user,
@@ -34,11 +34,10 @@ class GroupSerialiserTest(TestCase):
                 'request': Request(request),
         }   
         
-        for field_name in ['url', 'name']:
-            self.assertEqual(
-                GroupSerialiser(
-                    instance=group,
-                    context=serialiser_context
-                ).data[field_name],
-                getattr(group, field_name)
-            )
+        self.assertEqual(
+            GroupSerialiser(
+                instance=group,
+                context=serialiser_context
+            ).data['name'],
+            getattr(group, 'name')
+        )
