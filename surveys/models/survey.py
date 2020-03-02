@@ -5,6 +5,8 @@ class Survey(models.Model):
     name = models.CharField(max_length=255)
     available_places = models.IntegerField()
     user = models.ForeignKey(User, default=None, on_delete=models.DO_NOTHING)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     @classmethod
     def create(s, name, available_places, user_id):
