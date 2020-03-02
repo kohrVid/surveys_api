@@ -8,7 +8,7 @@ class Survey(models.Model):
 
     @classmethod
     def create(s, name, available_places, user_id):
-      return s(name=name, available_places=available_places, user_id=user_id)
+        return s(name=name, available_places=available_places, user_id=user_id)
 
     def __str__(self):
         return self.name
