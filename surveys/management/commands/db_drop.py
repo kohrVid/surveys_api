@@ -18,8 +18,8 @@ class Command(BaseCommand):
 
         conn.set_session(autocommit=True)
         curr = conn.cursor()
-        curr.execute(drop_database)
-        curr.execute(drop_role)
+        conn.cursor().execute(drop_database)
+        conn.cursor().execute(drop_role)
         conn.commit()
         curr.close()
         conn.close()

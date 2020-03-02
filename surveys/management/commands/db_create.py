@@ -1,4 +1,3 @@
-import os
 import psycopg2
 from decouple import config
 from django.core.management.base import BaseCommand, CommandError
@@ -32,17 +31,22 @@ class Command(BaseCommand):
 
         conn.set_session(autocommit=True)
         curr = conn.cursor()
-        curr.execute(create_role)
-        curr.execute(alter_role)
-        curr.execute(alter_role_password)
-        curr.execute(create_db)
-        conn.commit()
-        curr.close()
-        conn.close()
+
+        try:
+            curr.execute(create_role)
+        except psycopg2.errors.DuplicateObject as err:
+            print(err)
+        finally:
+            curr.execute(alter_role)
+            curr.execute(alter_role_password)
+            curr.execute(create_db)
+            curr.close()
+            conn.commit()
+            conn.close()
 
         self.stdout.write(
                 self.style.SUCCESS(
-                    "Successfully created the {} database".format("surveys_api")
+                    "Successfully created the {} database".format(config("DATABASE_NAME"))
                 )
         )
 
