@@ -19,6 +19,7 @@ while read directory events filename; do
   echo $events
   if [ "$events" == "CLOSE_WRITE,CLOSE" ]
     then
+      DATABASE_NAME=test_surveys_api make db-drop
       make test
   fi
 done
