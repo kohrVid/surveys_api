@@ -1,5 +1,5 @@
 install:
-	pip install -r requirements.txt
+	pip install -Ur requirements.txt
 	make db-create -i
 	make db-migrate -i
 

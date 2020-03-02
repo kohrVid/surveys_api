@@ -9,11 +9,17 @@ class Command(BaseCommand):
         drop_database = "DROP DATABASE {};".format(config("DATABASE_NAME"))
         drop_role = "DROP ROLE {}".format(config("DATABASE_USER"))
 
-        conn = psycopg2.connect("dbname=postgres user=postgres")
+        conn = psycopg2.connect(
+                "dbname={} user={}".format(
+                    config("POSTGRES_DB"),
+                    config("POSTGRES_USER"),
+                )
+        )
+
         conn.set_session(autocommit=True)
         curr = conn.cursor()
-        curr.execute(drop_database)
-        curr.execute(drop_role)
+        conn.cursor().execute(drop_database)
+        conn.cursor().execute(drop_role)
         conn.commit()
         curr.close()
         conn.close()

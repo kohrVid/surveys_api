@@ -33,7 +33,13 @@ class Command(BaseCommand):
                 config("DATABASE_NAME"),
         )
 
-        conn = psycopg2.connect("dbname=postgres user=postgres")
+        conn = psycopg2.connect(
+                "dbname={} user={}".format(
+                    config("POSTGRES_DB"),
+                    config("POSTGRES_USER"),
+                )
+        )
+
         conn.set_session(autocommit=True)
         curr = conn.cursor()
         curr.execute(clean_db)
