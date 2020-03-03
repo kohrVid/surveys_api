@@ -31,9 +31,6 @@ class UserSurveysViewsTest(TestCase):
         response = self.client.get("/users/{}/surveys".format(user1.id))
         resp_content = json.loads(response.content)
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.get('Content-Type', ''), 'application/json')
-
         user_ids = list(map(lambda x: x['user_id'], resp_content))
 
         self.assertIn(user1.id, user_ids )
