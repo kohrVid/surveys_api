@@ -1,7 +1,4 @@
-import datetime
-
 from django.test import TestCase
-from rest_framework import serializers
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 from surveys.models.survey_response import SurveyResponse

@@ -1,7 +1,6 @@
 import json
 
 from django.test import TestCase
-from django.urls import reverse
 from rest_framework import status
 from surveys.models.survey import Survey
 from surveys.models.survey_response import SurveyResponse
@@ -104,7 +103,7 @@ class SurveySurveyResponsesViewsTest(TestCase):
         survey1 = SurveyFactory.create(user_id=user.pk)
         survey2 = SurveyFactory.create(user_id=user.pk)
 
-        survey_response1 = SurveyResponseFactory.create(
+        SurveyResponseFactory.create(
                 survey_id=survey1.pk,
                 user_id=user.pk
         )
