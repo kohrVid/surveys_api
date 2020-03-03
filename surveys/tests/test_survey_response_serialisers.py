@@ -45,6 +45,9 @@ class SurveyResponseSerialiserTest(TestCase):
         factory = APIRequestFactory()
         user = UserFactory.create()
         survey = SurveyFactory.create(user_id=user.pk)
+
+        self.assertEqual(SurveyResponse.objects.count(), 0)
+
         request = factory.post("/survey-responses/")
 
         survey_response_factory = SurveyResponseFactory(
@@ -63,5 +66,31 @@ class SurveyResponseSerialiserTest(TestCase):
 
         survey_response = SurveyResponse.objects.all().last()
 
+        self.assertEqual(SurveyResponse.objects.count(), 1)
         self.assertEqual(survey_response.survey, survey)
         self.assertEqual(survey_response.user, user)
+
+    def test_create_if_unavailable(self):
+        factory = APIRequestFactory()
+        user = UserFactory.create()
+        survey = SurveyFactory.create(available_places=0, user_id=user.pk)
+
+        survey_response_factory = SurveyResponseFactory(
+                user_id=user.pk,
+                survey_id=survey.pk
+        )
+
+        original_count = SurveyResponse.objects.count()
+
+        request = factory.post("/survey-responses/")
+
+        serialiser_context = {
+                'request': Request(request),
+        }
+
+        SurveyResponseSerialiser(
+            instance=survey_response_factory,
+            context=serialiser_context
+        )
+
+        self.assertEqual(SurveyResponse.objects.count(), original_count)

@@ -68,6 +68,28 @@ class SurveyResponsesViewsTest(TestCase):
         self.assertIsNotNone(resp_content['created_at'])
 
 
+    def test_post_if_unavailable(self):
+        user = UserFactory.create()
+        survey = SurveyFactory.create(available_places=0, user_id=user.pk)
+
+        data = {
+                "survey_id": survey.id,
+                "user_id": user.id
+        }
+
+        original_count = SurveyResponse.objects.count()
+        response = self.client.post("/survey-responses", data=data)
+
+        self.assertEqual(SurveyResponse.objects.count(), original_count)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+        self.assertIn(
+                'No more available places for this survey',
+                response.content.decode("utf-8")
+        )
+
+
+
     def test_put(self):
         user = UserFactory.create()
         survey = SurveyFactory.create(user_id=user.pk)
