@@ -3,6 +3,7 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
+from surveys.models.survey import Survey
 from surveys.models.survey_response import SurveyResponse
 from surveys.tests.factories.user_factories import UserFactory
 from surveys.tests.factories.survey_factories import SurveyFactory
@@ -49,6 +50,7 @@ class SurveyResponsesViewsTest(TestCase):
     def test_post(self):
         user = UserFactory.create()
         survey = SurveyFactory.create(user_id=user.pk)
+        available_places = survey.available_places
 
         data = {
                 "survey_id": survey.id,
@@ -66,6 +68,11 @@ class SurveyResponsesViewsTest(TestCase):
         self.assertEqual(resp_content['survey_id'], survey.id)
         self.assertEqual(resp_content['user_id'], user.id)
         self.assertIsNotNone(resp_content['created_at'])
+
+        self.assertEqual(
+                Survey.objects.get(pk=survey.pk).available_places,
+                available_places-1
+        )
 
 
     def test_post_if_unavailable(self):
@@ -87,7 +94,6 @@ class SurveyResponsesViewsTest(TestCase):
                 'No more available places for this survey',
                 response.content.decode("utf-8")
         )
-
 
 
     def test_put(self):

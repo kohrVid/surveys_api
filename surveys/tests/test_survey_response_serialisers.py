@@ -70,6 +70,7 @@ class SurveyResponseSerialiserTest(TestCase):
         self.assertEqual(survey_response.survey, survey)
         self.assertEqual(survey_response.user, user)
 
+
     def test_create_if_unavailable(self):
         factory = APIRequestFactory()
         user = UserFactory.create()

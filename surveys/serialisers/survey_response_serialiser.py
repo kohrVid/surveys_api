@@ -15,12 +15,10 @@ class SurveyResponseSerialiser(serializers.ModelSerializer):
         survey = Survey.objects.get(pk=survey_id)
 
         if survey.available_places > 0:
-            survey_response = SurveyResponse.objects.create(
+            return SurveyResponse.objects.create(
                     survey=survey,
                     user=User.objects.get(pk=user_id)
             )
-
-            return survey_response
 
         raise ValidationError({
             "survey_id": ["No more available places for this survey"]
