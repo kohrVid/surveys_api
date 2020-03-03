@@ -12,6 +12,7 @@ setup(
             'coverage',
             'Django',
             'djangorestframework',
+            'drf-extensions',
             'drf-yasg',
             'Faker',
             'factory_boy',

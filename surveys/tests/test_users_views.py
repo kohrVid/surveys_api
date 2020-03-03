@@ -3,13 +3,67 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APIClient
 from surveys.models.survey import Survey
 from surveys.models.survey_response import SurveyResponse
+from surveys.tests.factories.user_factories import UserFactory
 from surveys.tests.factories.survey_factories import SurveyFactory
 from surveys.tests.factories.survey_response_factories import SurveyResponseFactory
-from surveys.tests.factories.user_factories import UserFactory
 
-class SurveysViewsTest(TestCase):
+class UserSurveysViewsTest(TestCase):
+    def test_list(self):
+        user = UserFactory.create()
+        SurveyFactory.create(user_id=user.pk)
+
+        response = self.client.get("/users/{}/surveys".format(user.id))
+        resp_content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.get('Content-Type', ''), 'application/json')
+        self.assertEqual(len(resp_content), 1)
+
+    def test_list_does_not_show_other_user_surveys(self):
+        user1 = UserFactory.create()
+        user2 = UserFactory.create(pk=2, username="test")
+        SurveyFactory.create(user_id=user1.pk)
+        SurveyFactory.create(pk=2, user_id=user2.pk)
+
+        response = self.client.get("/users/{}/surveys".format(user1.id))
+        resp_content = json.loads(response.content)
+
+        user_ids = list(map(lambda x: x['user_id'], resp_content))
+
+        self.assertIn(user1.id, user_ids )
+        self.assertNotIn(user2.id, user_ids)
+        self.assertEqual(len(resp_content), 1)
+
+    def test_get(self):
+        user = UserFactory.create()
+        survey = SurveyFactory.create(user_id=user.pk)
+
+        response = self.client.get(
+                "/users/{}/surveys/{}".format(user.id, survey.id)
+        )
+
+        resp_content = json.loads(response.content)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.get('Content-Type', ''), 'application/json')
+        self.assertEqual(resp_content['id'], survey.id)
+        self.assertEqual(resp_content['available_places'], survey.available_places)
+        self.assertEqual(resp_content['user_id'], user.id)
+
+    def test_get_does_not_show_other_user_surveys(self):
+        user1 = UserFactory.create()
+        user2 = UserFactory.create(pk=2, username="test")
+        SurveyFactory.create(user_id=user1.pk)
+        survey2 = SurveyFactory.create(pk=2, user_id=user2.pk)
+
+        response = self.client.get("/users/{}/surveys{}".format(user1.id, survey2.id))
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
     def test_post(self):
         user = UserFactory.create()
         data = {
@@ -19,7 +73,7 @@ class SurveysViewsTest(TestCase):
         }
 
         self.assertEqual(Survey.objects.count(), 0)
-        response = self.client.post("/surveys", data=data)
+        response = self.client.post("/users/{}/surveys".format(user.id), data=data)
         resp_content = json.loads(response.content)
         self.assertEqual(Survey.objects.count(), 1)
 
@@ -27,11 +81,58 @@ class SurveysViewsTest(TestCase):
         self.assertEqual(response.get('Content-Type', ''), 'application/json')
         self.assertEqual(resp_content['name'], data['name'])
         self.assertEqual(resp_content['available_places'], data['available_places'])
-        self.assertEqual(resp_content['user_id'], user.id)
+
+
+    def test_put(self):
+        client = APIClient()
+        user = UserFactory.create()
+        survey = SurveyFactory.create(user_id=user.pk)
+
+        data = {
+                "name": "Opinions about oranges",
+                "available_places": 30
+        }
+
+        response = client.put(
+                "/users/{}/surveys/{}/".format(user.id, survey.id),
+                data=data
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.get('Content-Type', ''), 'application/json')
+
+
+    def test_patch(self):
+        client = APIClient()
+        user = UserFactory.create()
+        survey = SurveyFactory.create(user_id=user.pk)
+
+        data = {
+                "name": "Opinions about oranges"
+        }
+
+        response = client.patch(
+                "/users/{}/surveys/{}/".format(user.id, survey.id),
+                data=data
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.get('Content-Type', ''), 'application/json')
+
+
+    def test_delete(self):
+        user = UserFactory.create()
+        survey = SurveyFactory.create(user_id=user.pk)
+
+        response = self.client.delete(
+                "/users/{}/surveys/{}".format(user.id, survey.id)
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
 
 
-class SurveySurveyResponsesViewsTest(TestCase):
+class UserSurveysResponseViewsTest(TestCase):
     def test_list(self):
         user = UserFactory.create()
         survey = SurveyFactory.create(user_id=user.pk)
@@ -41,37 +142,39 @@ class SurveySurveyResponsesViewsTest(TestCase):
                 user_id=user.pk
         )
 
-        response = self.client.get("/surveys/{}/survey-responses".format(survey.pk))
+        response = self.client.get("/users/{}/survey-responses".format(user.id))
         resp_content = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.get('Content-Type', ''), 'application/json')
         self.assertEqual(len(resp_content), 1)
 
-
-    def test_list_does_not_show_other_survey_responses(self):
-        user = UserFactory.create()
-        survey1 = SurveyFactory.create(user_id=user.pk)
-        survey2 = SurveyFactory.create(user_id=user.pk)
+    def test_list_does_not_show_other_user_surveys(self):
+        user1 = UserFactory.create()
+        user2 = UserFactory.create(username="test")
+        survey = SurveyFactory.create(user_id=user1.pk)
 
         SurveyResponseFactory.create(
-                survey_id=survey1.pk,
-                user_id=user.pk
+                survey_id=survey.pk,
+                user_id=user1.pk
         )
 
         SurveyResponseFactory.create(
-                survey_id=survey2.pk,
-                user_id=user.pk
+                survey_id=survey.pk,
+                user_id=user2.pk
         )
 
-        response = self.client.get("/surveys/{}/survey-responses".format(survey1.pk))
+        response = self.client.get("/users/{}/survey-responses".format(user1.id))
         resp_content = json.loads(response.content)
 
-        survey_ids = list(map(lambda x: x['survey_id'], resp_content))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.get('Content-Type', ''), 'application/json')
 
-        self.assertIn(survey1.id, survey_ids)
-        self.assertNotIn(survey2.id, survey_ids)
+        user_ids = list(map(lambda x: x['user_id'], resp_content))
 
+        self.assertIn(user1.pk, user_ids )
+        self.assertNotIn(user2.pk, user_ids)
+        self.assertEqual(len(resp_content), 1)
 
     def test_get(self):
         user = UserFactory.create()
@@ -83,10 +186,7 @@ class SurveySurveyResponsesViewsTest(TestCase):
         )
 
         response = self.client.get(
-                "/surveys/{}/survey-responses/{}".format(
-                    survey.pk,
-                    survey_response.pk
-                )
+                "/users/{}/survey-responses/{}".format(user.id, survey_response.id)
         )
 
         resp_content = json.loads(response.content)
@@ -98,31 +198,26 @@ class SurveySurveyResponsesViewsTest(TestCase):
         self.assertEqual(resp_content['user_id'], user.id)
         self.assertIsNotNone(resp_content['created_at'])
 
+    def test_get_does_not_show_other_user_surveys(self):
+        user1 = UserFactory.create()
+        user2 = UserFactory.create(username="test")
+        survey = SurveyFactory.create(user_id=user1.pk)
 
-    def test_get_does_not_show_other_survey_responses(self):
-        user = UserFactory.create()
-        survey1 = SurveyFactory.create(user_id=user.pk)
-        survey2 = SurveyFactory.create(user_id=user.pk)
-
-        survey_response1 = SurveyResponseFactory.create(
-                survey_id=survey1.pk,
-                user_id=user.pk
+        SurveyResponseFactory.create(
+                survey_id=survey.pk,
+                user_id=user1.pk
         )
 
         survey_response2 = SurveyResponseFactory.create(
-                survey_id=survey2.pk,
-                user_id=user.pk
+                survey_id=survey.pk,
+                user_id=user2.pk
         )
 
         response = self.client.get(
-                "/surveys/{}/survey-responses/{}".format(
-                    survey1.pk,
-                    survey_response2
-                )
+                "/users/{}/survey-responses/{}".format(user1.id, survey_response2)
         )
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
 
     def test_post(self):
         user = UserFactory.create()
@@ -137,7 +232,7 @@ class SurveySurveyResponsesViewsTest(TestCase):
         self.assertEqual(SurveyResponse.objects.count(), 0)
 
         response = self.client.post(
-                "/surveys/{}/survey-responses".format(survey.pk),
+                "/users/{}/survey-responses".format(user.id),
                 data=data
         )
 
@@ -166,9 +261,8 @@ class SurveySurveyResponsesViewsTest(TestCase):
         }
 
         original_count = SurveyResponse.objects.count()
-
         response = self.client.post(
-                "/surveys/{}/survey-responses".format(survey.pk),
+                "/users/{}/survey-responses".format(user.id),
                 data=data
         )
 
@@ -185,7 +279,7 @@ class SurveySurveyResponsesViewsTest(TestCase):
         user = UserFactory.create()
         survey = SurveyFactory.create(user_id=user.pk)
 
-        survey_response = SurveyResponseFactory.create(
+        SurveyResponseFactory.create(
                 survey_id=survey.pk,
                 user_id=user.pk
         )
@@ -196,10 +290,7 @@ class SurveySurveyResponsesViewsTest(TestCase):
         }
 
         response = self.client.put(
-                "/surveys/{}/survey-responses/{}".format(
-                    survey.pk,
-                    survey_response.pk
-                ),
+                "/users/{}/survey-responses/{}".format(user.id,survey.id),
                 data=data
         )
 
@@ -217,14 +308,11 @@ class SurveySurveyResponsesViewsTest(TestCase):
         )
 
         data = {
-                "survey_id": 100,
+                "user_id": 200,
         }
 
         response = self.client.patch(
-                "/surveys/{}/survey-responses/{}".format(
-                    survey.pk,
-                    survey_response.pk
-                ),
+                "/users/{}/survey-responses/{}".format(user.id, survey_response.id),
                 data=data
         )
 
@@ -242,10 +330,7 @@ class SurveySurveyResponsesViewsTest(TestCase):
         )
 
         response = self.client.delete(
-                "/surveys/{}/survey-responses/{}".format(
-                    survey.pk,
-                    survey_response.pk
-                )
+                "/users/{}/survey-responses/{}".format(user.id, survey_response.id)
         )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

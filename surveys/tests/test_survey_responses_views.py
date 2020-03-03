@@ -14,7 +14,7 @@ class SurveyResponsesViewsTest(TestCase):
         user = UserFactory.create()
         survey = SurveyFactory.create(user_id=user.pk)
 
-        survey_response = SurveyResponseFactory.create(
+        SurveyResponseFactory.create(
                 survey_id=survey.pk,
                 user_id=user.pk
         )
@@ -36,12 +36,12 @@ class SurveyResponsesViewsTest(TestCase):
                 user_id=user.pk
         )
 
-        response = self.client.get("/survey-responses/1")
+        response = self.client.get("/survey-responses/{}".format(survey_response.pk))
         resp_content = json.loads(response.content)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.get('Content-Type', ''), 'application/json')
-        self.assertEqual(resp_content['id'], 1)
+        self.assertEqual(resp_content['id'], survey_response.pk)
         self.assertEqual(resp_content['survey_id'], survey.id)
         self.assertEqual(resp_content['user_id'], user.id)
         self.assertIsNotNone(resp_content['created_at'])
@@ -64,7 +64,6 @@ class SurveyResponsesViewsTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.get('Content-Type', ''), 'application/json')
-        self.assertEqual(resp_content['id'], 1)
         self.assertEqual(resp_content['survey_id'], survey.id)
         self.assertEqual(resp_content['user_id'], user.id)
         self.assertIsNotNone(resp_content['created_at'])
@@ -110,7 +109,7 @@ class SurveyResponsesViewsTest(TestCase):
                 "user_id": 200
         }
 
-        response = self.client.put("/survey-responses/1", data=data)
+        response = self.client.put("/survey-responses/{}".format(survey_response.pk), data=data)
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(response.get('Content-Type', ''), 'application/json')
@@ -129,7 +128,10 @@ class SurveyResponsesViewsTest(TestCase):
                 "survey_id": 100,
         }
 
-        response = self.client.patch("/survey-responses/1", data=data)
+        response = self.client.patch(
+                "/survey-responses/{}".format(survey_response.pk),
+                data=data
+        )
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(response.get('Content-Type', ''), 'application/json')
@@ -144,6 +146,8 @@ class SurveyResponsesViewsTest(TestCase):
                 user_id=user.pk
         )
 
-        response = self.client.delete("/survey-responses/1")
+        response = self.client.delete(
+                "/survey-responses/{}".format(survey_response.pk)
+        )
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

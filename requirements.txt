@@ -11,7 +11,8 @@ coreapi==2.3.3            # via drf-yasg
 coreschema==0.0.4         # via coreapi, drf-yasg
 coverage==5.0.3           # via surveys_api (setup.py)
 django==3.0.3             # via djangorestframework, drf-yasg, surveys_api (setup.py)
-djangorestframework==3.11.0  # via drf-yasg, surveys_api (setup.py)
+djangorestframework==3.11.0  # via drf-extensions, drf-yasg, surveys_api (setup.py)
+drf-extensions==0.6.0     # via surveys_api (setup.py)
 drf-yasg==1.17.1          # via surveys_api (setup.py)
 factory-boy==2.12.0       # via surveys_api (setup.py)
 faker==4.0.1              # via factory-boy, surveys_api (setup.py)

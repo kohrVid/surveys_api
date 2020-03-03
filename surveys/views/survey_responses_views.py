@@ -2,11 +2,13 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework import mixins, status, viewsets
 from rest_framework.exceptions import ValidationError
+from rest_framework_extensions.mixins import NestedViewSetMixin
 from surveys.models.survey import Survey
 from surveys.models.survey_response import SurveyResponse
 from surveys.serialisers.survey_response_serialiser import SurveyResponseSerialiser
 
 class SurveyResponsesViewSet(
+        NestedViewSetMixin,
         mixins.CreateModelMixin,
         mixins.DestroyModelMixin,
         viewsets.ReadOnlyModelViewSet
