@@ -23,12 +23,12 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import routers, permissions
 from surveys.views import root_views, user_views, surveys_views, survey_responses_views
+from .user_urls import surveys_router, slashless_surveys_router, survey_responses_router, slashless_survey_responses_router
 
 router = routers.DefaultRouter()
 router.register(r'users', user_views.UserViewSet)
 router.register(r'groups', user_views.GroupViewSet)
 router.register(r'surveys', surveys_views.SurveysViewSet)
-
 router.register(
         r'survey-responses',
         survey_responses_views.SurveyResponsesViewSet
@@ -72,5 +72,10 @@ urlpatterns = [
 
     path('', root_views.get_root),
     path('', include(router.urls)),
+    path('', include(surveys_router.urls)),
+    path('', include(survey_responses_router.urls)),
+
     path('', include(slashless_router.urls)),
+    path('', include(slashless_surveys_router.urls)),
+    path('', include(slashless_survey_responses_router.urls)),
 ]
