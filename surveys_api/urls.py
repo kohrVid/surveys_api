@@ -22,12 +22,17 @@ from django.views.generic import TemplateView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import routers, permissions
-from surveys.views import root_views, user_views, surveys_views
+from surveys.views import root_views, user_views, surveys_views, survey_responses_views
 
 router = routers.DefaultRouter()
 router.register(r'users', user_views.UserViewSet)
 router.register(r'groups', user_views.GroupViewSet)
 router.register(r'surveys', surveys_views.SurveysViewSet)
+
+router.register(
+        r'survey-responses',
+        survey_responses_views.SurveyResponsesViewSet
+)
 
 slashless_router = routers.DefaultRouter(trailing_slash=False)
 slashless_router.registry = router.registry[:]

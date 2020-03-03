@@ -11,7 +11,7 @@ class SurveySerialiserTest(TestCase):
     def test_model_fields(self):
         factory = APIRequestFactory()
         user = UserFactory.create()
-        request = factory.get("/surveys/{}".format(user.pk))
+        request = factory.get("/surveys/{}".format(1))
         survey_factory = SurveyFactory(user_id=user.pk)
 
         serialiser_context = {
@@ -30,7 +30,7 @@ class SurveySerialiserTest(TestCase):
     def test_create(self):
         factory = APIRequestFactory()
         user = UserFactory.create()
-        request = factory.get("/surveys/{}".format(user.pk))
+        request = factory.post("/surveys/")
         survey_factory = SurveyFactory(user_id=user.pk)
 
         serialiser_context = {
