@@ -20,8 +20,7 @@ class Command(BaseCommand):
             BEGIN
               FOR stmt IN statements LOOP
                 EXECUTE 'TRUNCATE TABLE ' || quote_ident(stmt.tablename) ||
-                ' CASCADE; ALTER TABLE ' || quote_ident(stmt.tablename) ||
-                  ' ALTER COLUMN id RESTART WITH 1;';
+                ' CASCADE; ALTER SEQUENCE ' || stmt.tablename ||'_id_seq RESTART WITH 1;';
               END LOOP;
             END;
             $$ LANGUAGE plpgsql;
