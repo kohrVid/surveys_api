@@ -1,12 +1,15 @@
 # Surveys API
 
-This is an APi that can be used to store surveys and user responses to said
+This is an API that can be used to store surveys and user responses to said
 surveys.
 
 <!-- vim-markdown-toc GFM -->
 
 * [Prerequisites](#prerequisites)
-* [Run the app](#run-the-app)
+* [Using the application](#using-the-application)
+  * [Install](#install)
+  * [Run the app](#run-the-app)
+  * [Drop the database](#drop-the-database)
 * [API Documentation](#api-documentation)
 
 <!-- vim-markdown-toc -->
@@ -20,12 +23,15 @@ surveys.
     [`.requirements.txt` file](https://github.com/kohrVid/surveys_api/blob/master/requirements.txt)
 
 
-## Run the app
+## Using the application
 
 This is a [django](https://www.djangoproject.com/) application so the typical
 `python manage.py` can be used to run the webserver and migrations, &c. I have
 added a Makefile for simplicity so `make` commands can be used to install and
 run the application instead.
+
+
+### Install
 
 To install dependencies, create the PostgreSQL database and run migrations:
 
@@ -39,17 +45,14 @@ To only run migrations:
 
     make db-migrate
 
-To truncate all rows in the database:
 
-    make db-clean
-
-To drop the database:
-
-    make db-drop
+### Run the app
 
 To run the webserver:
 
     make serve
+
+The app can be viewed on [http://localhost:8000](http://localhost:8000).
 
 To run the test suite:
 
@@ -60,9 +63,21 @@ To run tests with inotify:
     make test-hot-reload
 
 
+### Drop the database
+
+To truncate all rows in the database:
+
+    make db-clean
+
+To drop the database:
+
+    make db-drop
+
+
+
 ## API Documentation
 
 This application comes with swagger documentation for the API. When the server
-is run on `localhost:8000`, the Swagger UI can be viewed
-[here](http://localhost:8000/swagger-ui) and the JSON version of the API
-documentation can be found [here](http://localhost:8000/swagger.json).
+is run, the Swagger UI can be viewed [here](http://localhost:8000/swagger-ui)
+and the JSON version of the API documentation can be found
+[here](http://localhost:8000/swagger.json).
