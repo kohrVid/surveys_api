@@ -22,7 +22,6 @@ class SurveysViewsTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.get('Content-Type', ''), 'application/json')
-        self.assertEqual(resp_content['id'], 1)
         self.assertEqual(resp_content['name'], data['name'])
         self.assertEqual(resp_content['available_places'], data['available_places'])
         self.assertEqual(resp_content['user_id'], user.id)
