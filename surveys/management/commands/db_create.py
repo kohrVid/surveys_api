@@ -1,33 +1,35 @@
 import psycopg2
+from psycopg2 import sql
 from decouple import config
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = 'Creates the Surveys API database'
 
     def handle(self, *args, **options):
-        create_role = "CREATE ROLE {}".format(config("DATABASE_USER"))
-
-        alter_role = "ALTER ROLE {} WITH SUPERUSER LOGIN CREATEDB;".format(
-                config("DATABASE_USER"),
+        create_role = sql.SQL("CREATE ROLE {}").format(
+                sql.Identifier(config("DATABASE_USER"))
         )
 
-        alter_role_password = "ALTER ROLE {} password '{}';".format(
-                config("DATABASE_USER"),
-                config("DATABASE_PASSWORD"),
+        alter_role = sql.SQL("ALTER ROLE {} WITH SUPERUSER LOGIN CREATEDB;").format(
+                sql.Identifier(config("DATABASE_USER"))
         )
 
-        create_db = "CREATE DATABASE {} WITH OWNER {} ENCODING 'UTF8';".format(
-                config("DATABASE_NAME"),
-                config("DATABASE_USER"),
+        alter_role_password = sql.SQL("ALTER ROLE {} password '{}';").format(
+                sql.Identifier(config("DATABASE_USER")),
+                sql.Identifier(config("DATABASE_PASSWORD")),
+        )
+
+        create_db = sql.SQL("CREATE DATABASE {} WITH OWNER {} ENCODING 'UTF8';").format(
+                sql.Identifier(config("DATABASE_NAME")),
+                sql.Identifier(config("DATABASE_USER")),
         )
 
         conn = psycopg2.connect(
-                "dbname={} user={}".format(
-                    config("POSTGRES_DB"),
-                    config("POSTGRES_USER"),
-                )
+                database=config("POSTGRES_DB"),
+                user=config("POSTGRES_USER")
         )
+
 
         conn.set_session(autocommit=True)
         curr = conn.cursor()

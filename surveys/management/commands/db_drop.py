@@ -1,19 +1,23 @@
 import psycopg2
+from psycopg2 import sql
 from decouple import config
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = 'Drops the Surveys API database'
 
     def handle(self, *args, **options):
-        drop_database = "DROP DATABASE {};".format(config("DATABASE_NAME"))
-        drop_role = "DROP ROLE {}".format(config("DATABASE_USER"))
+        drop_database = sql.SQL("DROP DATABASE {};").format(
+                sql.Identifier(config("DATABASE_NAME")),
+        )
+
+        drop_role = sql.SQL("DROP ROLE {};").format(
+                sql.Identifier(config("DATABASE_USER")),
+        )
 
         conn = psycopg2.connect(
-                "dbname={} user={}".format(
-                    config("POSTGRES_DB"),
-                    config("POSTGRES_USER"),
-                )
+                database=config("POSTGRES_DB"),
+                user=config("POSTGRES_USER")
         )
 
         conn.set_session(autocommit=True)

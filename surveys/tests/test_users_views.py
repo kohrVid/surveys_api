@@ -1,7 +1,6 @@
 import json
 
 from django.test import TestCase
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from surveys.models.survey import Survey
@@ -308,7 +307,7 @@ class UserSurveysResponseViewsTest(TestCase):
         )
 
         data = {
-                "user_id": 200,
+                "user_id": 200
         }
 
         response = self.client.patch(

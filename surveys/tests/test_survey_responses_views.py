@@ -1,7 +1,6 @@
 import json
 
 from django.test import TestCase
-from django.urls import reverse
 from rest_framework import status
 from surveys.models.survey import Survey
 from surveys.models.survey_response import SurveyResponse

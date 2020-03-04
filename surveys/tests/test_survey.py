@@ -1,6 +1,6 @@
 from django import forms
 from django.test import TestCase
-from surveys.models.survey import Survey, User
+from surveys.models.survey import Survey
 from surveys.tests.factories.user_factories import UserFactory
 
 class SurveyTest(TestCase):
