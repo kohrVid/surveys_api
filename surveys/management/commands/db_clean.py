@@ -1,12 +1,12 @@
 import psycopg2
 from decouple import config
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     help = 'Deletes all rows in the Surveys API database'
 
     def handle(self, *args, **options):
-        truncate_tables = """
+        stored_proc = """
             CREATE OR REPLACE FUNCTION truncate_tables(username IN VARCHAR) RETURNS void AS $$
             DECLARE
               statements CURSOR FOR
@@ -26,22 +26,14 @@ class Command(BaseCommand):
             $$ LANGUAGE plpgsql;
         """
 
-
-        clean_db = "{} SELECT truncate_tables('{}');".format(
-                truncate_tables,
-                config("DATABASE_NAME"),
-        )
-
         conn = psycopg2.connect(
-                "dbname={} user={}".format(
-                    config("POSTGRES_DB"),
-                    config("POSTGRES_USER"),
-                )
+                database=config("DATABASE_NAME"),
+                user=config("DATABASE_USER")
         )
 
-        conn.set_session(autocommit=True)
         curr = conn.cursor()
-        curr.execute(clean_db)
+        curr.execute(stored_proc)
+        curr.execute("SELECT truncate_tables(%s);", [config("DATABASE_USER")])
         conn.commit()
         curr.close()
         conn.close()
